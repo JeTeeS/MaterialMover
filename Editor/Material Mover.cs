@@ -64,25 +64,19 @@ namespace JeTeeS.MaterialMover
             {
                 if(selectedGameObject)
                 {
-                    foreach(Renderer mesh in GetAllMeshes(selectedGameObject))
+                    foreach(Material material in GetAllMeshes(selectedGameObject).FindMats().Distinct())
                     {
-                        foreach(Material material in mesh.FindMats())
+                        bool isSelected = false;
+                        foreach(Material selectedMat in selectedMaterials) if(selectedMat == material) isSelected = true;
+                        if (!isSelected)
                         {
-                            bool selected = false;
-                            foreach(Material selectedMat in selectedMaterials)
+                            using (new SqueezeScope((0, 0, Horizontal)))
                             {
-                                if(selectedMat == material) selected = true;
-                            }
-                            if (!selected)
-                            {
-                                using (new SqueezeScope((0, 0, Horizontal)))
+                                using(new GUIDisableScope())
                                 {
-                                    using(new GUIDisableScope())
-                                    {
-                                        EditorGUILayout.ObjectField(material, typeof(Material), false);
-                                    }
-                                    if (GUILayout.Button("Add Material")) selectedMaterials.Add(material);
+                                    EditorGUILayout.ObjectField(material, typeof(Material), false);
                                 }
+                                if (GUILayout.Button("Add Material")) selectedMaterials.Add(material);
                             }
                         }
                     }
